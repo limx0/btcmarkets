@@ -4,10 +4,10 @@ import requests
 from urllib.request import urljoin
 from collections import OrderedDict
 
-from .auth import build_headers
+from btcmarkets.auth import build_headers
 
 
-class BTCMarketsAPI:
+class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
     PRICE_MULTI = 100000000

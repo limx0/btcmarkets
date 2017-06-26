@@ -1,2 +1,2 @@
 
-from .core import BTCMarketsAPI
+from .core import BTCMarkets
