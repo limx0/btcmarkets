@@ -1,4 +1,5 @@
-from distutils.core import setup
+
+from setuptools import setup
 
 setup(
     name="btcmarkets",
@@ -8,4 +9,5 @@ setup(
     author="Bradley McElroy",
     author_email="bradley.mcelroy@live.com",
     url="https://github.com/limx0/btcmarkets",
+    install_requires=['requests'],
 )
