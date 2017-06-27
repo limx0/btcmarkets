@@ -10,8 +10,6 @@ from btcmarkets.auth import build_headers
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
-    PRICE_MULTI = 100000000
-    VOLUME_MULTI = 100000000
 
     def __init__(self):
         self.session = requests.Session()
@@ -48,14 +46,24 @@ class BTCMarkets:
         return self.request('POST', end_point='/order/detail', data=data)
 
     def insert_order(self, instrument, currency, order_side, price, volume, order_type):
+        """
+        :param instrument: {'BTC', 'ETH', 'LTC'}
+        :param currency: {'BTC', 'AUD'}
+        :param order_side: ('Bid', 'Ask')
+        :param price: price for order. Must be * 100,000,000 as per https://github.com/BTCMarkets/API/wiki/Trading-API
+        :param volume: volume for order. Must be * 100,000,000 as per https://github.com/BTCMarkets/API/wiki/Trading-API
+        :param order_type: {'Limit', 'Market')
+        :return:
+        """
+        assert len(str(int(price))) > 5 and len(str(int(volume))) > 5
         data = OrderedDict([
             ('currency', currency),
             ('instrument', instrument),
-            ('price', int(price * self.PRICE_MULTI)),
-            ('volume', int(volume * self.VOLUME_MULTI)),
+            ('price', price),
+            ('volume', volume),
             ('orderSide', order_side),
             ('ordertype', order_type),
-            ('clientRequestId', '1')
+            ('clientRequestId', '1'),
         ])
         return self.request('POST', end_point='/order/create', data=data)
 
