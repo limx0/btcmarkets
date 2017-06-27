@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name="btcmarkets",
     packages=["btcmarkets"],
-    version="0.0.1",
+    version="0.0.2",
     description="Python wrapper for the BTCMarkets API",
     author="Bradley McElroy",
     author_email="bradley.mcelroy@live.com",
