@@ -1,8 +1,8 @@
 
 import json
-from urllib.request import urljoin
 from collections import OrderedDict
 from btcmarkets.auth import build_headers
+from btcmarkets.http_requests import urljoin
 
 
 class BTCMarkets:
@@ -62,7 +62,11 @@ class BTCMarkets:
         ])
         return self.build_request(method='POST', end_point='/order/create', data=data)
 
-    def delete_order(self, order_ids: list):
+    def delete_order(self, order_ids):
+        """
+        :param order_ids: list of order_ids
+        :return:
+        """
         data = OrderedDict([('orderIds', order_ids)])
         return self.build_request(method='POST', end_point='/order/cancel', data=data)
     
