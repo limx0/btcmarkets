@@ -8,8 +8,15 @@ Python wrapper for the BTCMarkets API
 $ pip install btcmarkets
 ```
 
+#### Account / Trading endpoints
+In order to be able to access POST endpoints (trading and accounts), the following environment variables need to be set
+- `BTCMARKETS_API_KEY`
+- `BTCMARKETS_SECRET`
+
+API keys can be generated from https://btcmarkets.net/account/apikey
+
 ##### Examples
-`btcmarkets.BTCMarkets` class contains the definitions and parameters for each of the API end_points. Pass the output of any of the functions to a http_request to retreive results.
+`btcmarkets.BTCMarkets` class contains the definitions and parameters for each of the API endpoints. Pass the output of any of the functions to a http_request to retreive results.
 ```pydocstring
 >>> from btcmarkets import BTCMarkets, request
 >>> api = BTCMarkets()
