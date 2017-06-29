@@ -23,7 +23,7 @@ def build_headers(end_point, post_data=None):
         ("Accept", "application/json"),
         ("Accept-Charset", "UTF-8"),
         ("Content-Type", "application/json"),
-        ("apikey", api_key),
+        ("apikey", api_key.decode("utf-8")),
         ("timestamp", timestamp),
         ("signature", bsig),
     ])
