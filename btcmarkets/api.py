@@ -1,18 +1,13 @@
 
 import json
-import requests
 from urllib.request import urljoin
 from collections import OrderedDict
-
 from btcmarkets.auth import build_headers
 
 
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
-
-    def __init__(self):
-        self.session = requests.Session()
 
     def get_accounts(self):
         return self.build_request(method='GET', end_point='/account/balance')
@@ -55,7 +50,7 @@ class BTCMarkets:
         :param order_type: {'Limit', 'Market')
         :return:
         """
-        assert len(str(int(price))) > 5 and len(str(int(volume))) > 5
+        assert len(str(int(price))) > 5
         data = OrderedDict([
             ('currency', currency),
             ('instrument', instrument),
