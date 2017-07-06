@@ -1,0 +1,27 @@
+interactions:
+- request:
+    body: '{"currency":"AUD","instrument":"BTC","limit":100,"since":0}'
+    headers:
+      Accept: [application/json]
+      Accept-Charset: [UTF-8]
+      Connection: [close]
+      Content-Length: ['59']
+      Content-Type: [application/json]
+      Host: [api.btcmarkets.net]
+      Timestamp: ['1499334043738']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://api.btcmarkets.net//order/open
+  response:
+    body: {string: '{"success":true,"errorCode":null,"errorMessage":null,"orders":[]}'}
+    headers:
+      CF-RAY: [37a19aaecb7765db-SYD]
+      Connection: [close]
+      Content-Length: ['65']
+      Content-Type: [application/json;charset=UTF-8]
+      Date: ['Thu, 06 Jul 2017 09:40:43 GMT']
+      Server: [cloudflare-nginx]
+      Set-Cookie: ['__cfduid=deef27a94f5287ec2a113cd434cab23681499334043; expires=Fri,
+          06-Jul-18 09:40:43 GMT; path=/; domain=.btcmarkets.net; HttpOnly']
+    status: {code: 200, message: OK}
+version: 1
