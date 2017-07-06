@@ -7,6 +7,8 @@ from btcmarkets.util import build_headers, DEFAULT_REQUESTER
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
+    PRICE_MULTI = 100000000
+    VOLUME_MULTI = 100000000
 
     def __init__(self, request_func=DEFAULT_REQUESTER, return_kwargs=False):
         self.request = request_func
@@ -18,26 +20,26 @@ class BTCMarkets:
     def get_order_book(self, instrument, currency):
         return self.process(method='GET', end_point='/market/%s/%s/orderbook' % (instrument, currency))
 
-    def get_trades(self, instrument, currency, since=0):
+    def get_market_trades(self, instrument, currency, since=0):
         return self.process(method='GET', end_point='/market/%s/%s/trades?since=%s' % (instrument, currency, since))
 
     def get_open_orders(self, instrument, currency, limit=100, since=0):
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since),
         ])
-        return self.process(method='POST', end_point='/order/open', data=data)
+        return self.process(method='POST', end_point='/order/open', data=data, result_key='orders')
 
     def get_order_history(self, instrument, currency, limit=100, since=0):
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since)
         ])
-        return self.process(method='POST', end_point='/order/history', data=data)
+        return self.process(method='POST', end_point='/order/history', data=data, result_key='orders')
 
     def get_trade_history(self, instrument, currency, limit=100, since=0):
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since)
         ])
-        return self.process(method='POST', end_point='/order/trade/history', data=data)
+        return self.process(method='POST', end_point='/order/trade/history', data=data, result_key='trades')
 
     def get_order_detail(self, order_ids):
         data = OrderedDict([('orderIds', order_ids)])
@@ -53,7 +55,6 @@ class BTCMarkets:
         :param order_type: {'Limit', 'Market')
         :return:
         """
-        assert len(str(int(price))) > 5
         data = OrderedDict([
             ('currency', currency),
             ('instrument', instrument),
@@ -72,19 +73,32 @@ class BTCMarkets:
         """
         data = OrderedDict([('orderIds', order_ids)])
         return self.process(method='POST', end_point='/order/cancel', data=data)
-    
+
+    def parse_input_data(self, data):
+        for upper in ('currency', 'instrument'):
+            if upper in data:
+                    data[upper] = data[upper].upper()
+        if 'price' in data:
+            data['price'] *= self.PRICE_MULTI
+        if 'volume' in data:
+            data['volume'] += self.VOLUME_MULTI
+        return data
+
     def build_request(self, method, end_point, data=None):
         url = '%s/%s' % (self.base_url, end_point)
         if data is not None:
+            data = self.parse_input_data(data)
             data = json.dumps(data, separators=(',', ':'))
         headers = build_headers(end_point, data)
         return dict(method=method, url=url, headers=headers, data=data)
 
-    def process(self, method, end_point, data=None):
+    def process(self, method, end_point, data=None, result_key=None):
         kwargs = self.build_request(method, end_point, data)
         if self.return_kwargs:
             return kwargs
         resp = self.request(**kwargs)
-        if isinstance(resp, dict) and not resp['success']:
-            raise Exception('%s: %s' % (resp['errorCode'], resp['errorMessage']))
+        if isinstance(resp, dict) and resp.get('errorMessage') is not None:
+            raise Exception('BTCMarkets Exception [%s] %s' % (resp['errorCode'], resp['errorMessage']))
+        if result_key:
+            return resp[result_key]
         return resp
