@@ -39,8 +39,12 @@ def urllib_request(method, url, headers, data):
     return json.loads(resp.read().decode())
 
 
-def urllib2_request(method, url, headers, data):
-    pass
+def urllib2_request(url, headers, data):
+    from urllib2 import urlopen, Request
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    resp = urlopen(Request(url=url, headers=headers, data=data))
+    return json.loads(resp.read().decode())
 
 
 if sys.version_info > (3, 0):
