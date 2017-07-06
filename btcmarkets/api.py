@@ -84,8 +84,7 @@ class BTCMarkets:
         kwargs = self.build_request(method, end_point, data)
         if self.return_kwargs:
             return kwargs
-        response = self.request(**kwargs)
-        if response['error']:
-            print(kwargs)
-            raise Exception(response['error'][0])
-        return response['result']
+        resp = self.request(**kwargs)
+        if isinstance(resp, dict) and not resp['success']:
+            raise Exception('%s: %s' % (resp['errorCode'], resp['errorMessage']))
+        return resp

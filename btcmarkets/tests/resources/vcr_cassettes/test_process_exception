@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: '{"orderIds":"a"}'
+    headers:
+      Accept: [application/json]
+      Accept-Charset: [UTF-8]
+      Connection: [close]
+      Content-Length: ['16']
+      Content-Type: [application/json]
+      Host: [api.btcmarkets.net]
+      Timestamp: ['1499336111707']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://api.btcmarkets.net//order/cancel
+  response:
+    body: {string: '<html>
+
+        <head>
+
+        <title>Bad request.</title>
+
+        </head>
+
+        <body>
+
+        Bad request.
+
+        </body>
+
+        </html>'}
+    headers:
+      CF-RAY: [37a1cd2a9ad165d5-SYD]
+      Connection: [close]
+      Content-Type: [text/html]
+      Date: ['Thu, 06 Jul 2017 10:15:11 GMT']
+      Server: [cloudflare-nginx]
+      Set-Cookie: ['__cfduid=da4146693b63e6723356e841c609a29651499336111; expires=Fri,
+          06-Jul-18 10:15:11 GMT; path=/; domain=.btcmarkets.net; HttpOnly']
+    status: {code: 400, message: Bad Request}
+version: 1
