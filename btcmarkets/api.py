@@ -1,13 +1,16 @@
 
 import json
 from collections import OrderedDict
-from btcmarkets.auth import build_headers
-from btcmarkets.http_requests import urljoin
+from btcmarkets.util import build_headers, DEFAULT_REQUESTER
 
 
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
+
+    def __init__(self, request_func=DEFAULT_REQUESTER, return_kwargs=False):
+        self.request = request_func
+        self.return_kwargs = return_kwargs
 
     def get_accounts(self):
         return self.build_request(method='GET', end_point='/account/balance')
@@ -71,8 +74,18 @@ class BTCMarkets:
         return self.build_request(method='POST', end_point='/order/cancel', data=data)
     
     def build_request(self, method, end_point, data=None):
-        url = urljoin(self.base_url, end_point)
+        url = '%s/%s' % (self.base_url, end_point)
         if data is not None:
             data = json.dumps(data, separators=(',', ':'))
         headers = build_headers(end_point, data)
         return dict(method=method, url=url, headers=headers, data=data)
+
+    def process(self, method, end_point, data=None):
+        kwargs = self.build_request(method, end_point, data)
+        if self.return_kwargs:
+            return kwargs
+        response = self.request(**kwargs)
+        if response['error']:
+            print(kwargs)
+            raise Exception(response['error'][0])
+        return response['result']

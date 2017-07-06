@@ -1,6 +1,8 @@
 
 import os
+import sys
 import time
+import json
 import hmac
 import base64
 import hashlib
@@ -27,3 +29,21 @@ def build_headers(end_point, post_data=None):
         ("timestamp", timestamp),
         ("signature", bsig),
     ])
+
+
+def urllib_request(method, url, headers, data):
+    from urllib.request import urlopen, Request
+    if isinstance(data, str):
+        data = data.encode("utf-8")
+    resp = urlopen(Request(method=method, url=url, headers=headers, data=data))
+    return json.loads(resp.read().decode())
+
+
+def urllib2_request(method, url, headers, data):
+    pass
+
+
+if sys.version_info > (3, 0):
+    DEFAULT_REQUESTER = urllib_request
+else:
+    DEFAULT_REQUESTER = urllib2_request

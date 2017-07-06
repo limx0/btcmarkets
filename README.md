@@ -1,42 +1,22 @@
 # btcmarkets
-Python wrapper for the BTCMarkets API
+`btcmarkets` is a python wrapper for the BTCMarkets API. It has no dependencies and works with Python 2/3.
 
 ### Quick start:
 
-##### Install
+#### Install
 ```bash
 $ pip install btcmarkets
 ```
 
-#### Account / Trading endpoints
-In order to be able to access POST endpoints (trading and accounts), the following environment variables need to be set
-- `BTCMARKETS_API_KEY`
-- `BTCMARKETS_SECRET`
-
-API keys can be generated from https://btcmarkets.net/account/apikey
-
-##### Examples
-`btcmarkets.BTCMarkets` class contains the definitions and parameters for each of the API endpoints. Pass the output of any of the functions to a http_request to retreive results.
+#### Examples
+`btcmarkets.BTCMarkets` class contains the definitions and parameters for each of the API endpoints
 ```pydocstring
->>> from btcmarkets import BTCMarkets, request
->>> api = BTCMarkets()
->>> api.get_accounts()
-{'method': 'GET',
- 'url': 'https://api.btcmarkets.net/account/balance',
- 'headers': OrderedDict([
-              ('Accept', 'application/json'),
-              ('Accept-Charset', 'UTF-8'),
-              ('Content-Type', 'application/json'),
-              ('apikey', 'MY_API_KEY'),
-              ('timestamp', '1498699921678'),
-              ('signature', '123456789123456789')
-            ]),
- }
-
->>> request(**api.get_accounts())
+>>> from btcmarkets import BTCMarkets
+>>> btcm_api = BTCMarkets()
+>>> btcm_api.get_accounts()
 [{'currency': 'AUD', 'balance': 100, 'pendingFunds': 0}, ...]
 
->>> request(**api.get_trade_history(instrument='BTC', currency='AUD'))
+>>> btcm_api.get_trade_history(instrument='BTC', currency='AUD')
 {'errorCode': None,
  'errorMessage': None,
  'success': True,
@@ -53,21 +33,53 @@ API keys can be generated from https://btcmarkets.net/account/apikey
  }
 ```
 
-Further documentation and examples can be found on the BTCMarkets API page - https://github.com/BTCMarkets/API
+Further documentation and examples can (somewhat) be found on the BTCMarkets API page - https://github.com/BTCMarkets/API
 
-##### Using a different http library
-. By default `btcmarkets.request` will use python3s `urllib.request`, to use another library:
+
+#### Auth endpoints (Accounts & Trading)
+In order to be able to access POST endpoints (trading and accounts), the following environment variables need to be set
+- `BTCMARKETS_API_KEY`
+- `BTCMARKETS_SECRET`
+
+API keys can be generated from https://btcmarkets.net/account/apikey
+
+
+#### Advanced Usage
+
+##### Using a different HTTP request library
+
+By default `BTCMarkets` has no dependencies and will use python3s `urllib.request`.
+You can replace this with any http library by passing the request function to the constructor eg.
 
 ```pydocstring
->>> from btcmarkets import BTCMarkets, request
->>> api = BTCMarkets()
+>>> import requests
+>>> btcm_api = BTCMarkets(request_func=requests.request)
+```
 
-# Use requests
->>> from requests import request
->>> request(**api.get_accounts())
-<Response [200]>
+##### Even more control
+Each of the `BTCMarkets` methods simply generate a dict to pass to a http request library.
+For even finer grain control over your execution, setting `return_kwargs=True` will return the underlying request dict.
 
-# Use aiohttp
+```pydocstring
+>>> from btcmarkets import BTCMarkets
+>>> btcm_api = BTCMarkets(return_kwargs=True)
+>>> btcm_api.get_accounts()
+{'method': 'GET',
+ 'url': 'https://api.btcmarkets.net/account/balance',
+ 'headers': OrderedDict([
+              ('Accept', 'application/json'),
+              ('Accept-Charset', 'UTF-8'),
+              ('Content-Type', 'application/json'),
+              ('apikey', 'MY_API_KEY'),
+              ('timestamp', '1498699921678'),
+              ('signature', '123456789123456789')
+            ]),
+ }
+```
+
+This could be handy if you want to use the new `async/await` features of Python with a library like `aiohttp`
+
+```
 >>> from aiohttp import ClientSession
 >>> session = ClientSession()
 >>> resp = await session.request(**api.get_accounts())
