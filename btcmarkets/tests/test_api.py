@@ -1,6 +1,7 @@
 
 import pytest
 from btcmarkets.api import BTCMarkets
+from btcmarkets.enums import OrderSide, OrderType
 
 api = BTCMarkets()
 
@@ -27,6 +28,16 @@ def test_order_book():
 def test_get_accounts():
     accounts = api.get_accounts()
     assert isinstance(accounts, list)
+    print(accounts)
+
+
+def test_order_insert_delete():
+    instrument, currency = 'BTC', 'AUD'
+    resp = api.insert_order(
+        instrument=instrument, currency=currency, order_side=OrderSide.Buy, price=1,
+        volume=0.001, order_type=OrderType.LIMIT
+    )
+    x=1
 
 
 def test_process_exception():

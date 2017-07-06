@@ -1,14 +1,13 @@
 
 import json
 from collections import OrderedDict
+from btcmarkets.enums import Multipliers
 from btcmarkets.util import build_headers, DEFAULT_REQUESTER
 
 
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
-    PRICE_MULTI = 100000000
-    VOLUME_MULTI = 100000000
 
     def __init__(self, request_func=DEFAULT_REQUESTER, return_kwargs=False):
         self.request = request_func
@@ -79,9 +78,9 @@ class BTCMarkets:
             if upper in data:
                     data[upper] = data[upper].upper()
         if 'price' in data:
-            data['price'] *= self.PRICE_MULTI
+            data['price'] *= Multipliers.PRICE
         if 'volume' in data:
-            data['volume'] += self.VOLUME_MULTI
+            data['volume'] *= Multipliers.VOLUME
         return data
 
     def build_request(self, method, end_point, data=None):
