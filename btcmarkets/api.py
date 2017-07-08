@@ -2,14 +2,15 @@
 import json
 from collections import OrderedDict
 from btcmarkets.enums import Multipliers
-from btcmarkets.util import build_headers, DEFAULT_REQUESTER
+from btcmarkets.compat import urllib_request
+from btcmarkets.util import build_headers
 
 
 class BTCMarkets:
 
     base_url = 'https://api.btcmarkets.net'
 
-    def __init__(self, request_func=DEFAULT_REQUESTER, return_kwargs=False):
+    def __init__(self, request_func=urllib_request, return_kwargs=False):
         self.request = request_func
         self.return_kwargs = return_kwargs
 
@@ -42,7 +43,7 @@ class BTCMarkets:
 
     def get_order_detail(self, order_ids):
         data = OrderedDict([('orderIds', order_ids)])
-        return self.process(method='POST', end_point='/order/detail', data=data)
+        return self.process(method='POST', end_point='/order/detail', data=data, result_key='orders')
 
     def insert_order(self, instrument, currency, order_side, price, volume, order_type):
         """
@@ -78,9 +79,9 @@ class BTCMarkets:
             if upper in data:
                     data[upper] = data[upper].upper()
         if 'price' in data:
-            data['price'] *= Multipliers.PRICE
+            data['price'] = int(data['price'] * Multipliers.PRICE)
         if 'volume' in data:
-            data['volume'] *= Multipliers.VOLUME
+            data['volume'] = int(data['volume'] * Multipliers.VOLUME)
         return data
 
     def build_request(self, method, end_point, data=None):
