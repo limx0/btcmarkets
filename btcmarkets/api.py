@@ -15,7 +15,7 @@ class BTCMarkets:
         self.return_kwargs = return_kwargs
 
     def get_accounts(self):
-        return self.process(method='GET', end_point='/account/balance')
+        return self.process(method='GET', end_point='/account/balance', parse_output=True)
 
     def get_order_book(self, instrument, currency):
         return self.process(method='GET', end_point='/market/%s/%s/orderbook' % (instrument, currency))
@@ -93,6 +93,8 @@ class BTCMarkets:
                     x['price'] = x['price'] / Multipliers.PRICE
                 if 'volume' in x:
                     x['volume'] = x['volume'] / Multipliers.VOLUME
+                if 'balance' in x:
+                    x['balance'] = x['balance'] / Multipliers.VOLUME
         return data
 
     def build_request(self, method, end_point, data=None):
