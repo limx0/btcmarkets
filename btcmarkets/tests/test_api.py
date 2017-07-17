@@ -45,7 +45,7 @@ def test_order_insert_delete():
     assert (resp_insert['id'])
 
     # Check order exists and is correct
-    time.sleep(0.2)
+    time.sleep(0.5)
     resp_info = api.get_order_detail(order_ids=[resp_insert['id']])
     assert resp_info[0]['status'] in ('New', 'Placed')
     assert resp_info[0]['volume'] == volume
@@ -55,7 +55,7 @@ def test_order_insert_delete():
     resp_delete = api.delete_order(order_ids=[resp_insert['id']])
     assert resp_delete['responses'][0]['id']
     assert resp_delete['responses'][0]['success']
-    time.sleep(0.2)
+    time.sleep(0.5)
     assert not api.get_open_orders(instrument, currency)
 
 
