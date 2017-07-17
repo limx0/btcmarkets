@@ -7,6 +7,10 @@ import hashlib
 import collections
 
 
+class BTCMException(Exception):
+    pass
+
+
 def build_headers(end_point, post_data=None):
 
     api_key = os.environ['BTCMARKETS_API_KEY'].encode("utf-8")
@@ -27,3 +31,9 @@ def build_headers(end_point, post_data=None):
         ("timestamp", timestamp),
         ("signature", bsig),
     ])
+
+
+def maybe_list(x):
+    if isinstance(x, (str, dict)):
+        return [x]
+    return x

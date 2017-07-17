@@ -3,7 +3,7 @@ import json
 from collections import OrderedDict
 from btcmarkets.enums import Multipliers
 from btcmarkets.compat import urllib_request
-from btcmarkets.util import build_headers
+from btcmarkets.util import build_headers, BTCMException, maybe_list
 
 
 class BTCMarkets:
@@ -27,23 +27,24 @@ class BTCMarkets:
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since),
         ])
-        return self.process(method='POST', end_point='/order/open', data=data, result_key='orders')
+        return self.process(method='POST', end_point='/order/open', data=data, result_key='orders', parse_output=True)
 
     def get_order_history(self, instrument, currency, limit=100, since=0):
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since)
         ])
-        return self.process(method='POST', end_point='/order/history', data=data, result_key='orders')
+        return self.process(method='POST', end_point='/order/history', data=data, result_key='orders', parse_output=True)
 
     def get_trade_history(self, instrument, currency, limit=100, since=0):
         data = OrderedDict([
             ('currency', currency), ('instrument', instrument), ('limit', limit), ('since', since)
         ])
-        return self.process(method='POST', end_point='/order/trade/history', data=data, result_key='trades')
+        end_point = '/order/trade/history'
+        return self.process(method='POST', end_point=end_point, data=data, result_key='trades', parse_output=True)
 
     def get_order_detail(self, order_ids):
         data = OrderedDict([('orderIds', order_ids)])
-        return self.process(method='POST', end_point='/order/detail', data=data, result_key='orders')
+        return self.process(method='POST', end_point='/order/detail', data=data, result_key='orders', parse_output=True)
 
     def insert_order(self, instrument, currency, order_side, price, volume, order_type):
         """
@@ -64,7 +65,7 @@ class BTCMarkets:
             ('ordertype', order_type),
             ('clientRequestId', '1'),
         ])
-        return self.process(method='POST', end_point='/order/create', data=data)
+        return self.process(method='POST', end_point='/order/create', data=data, parse_output=True)
 
     def delete_order(self, order_ids):
         """
@@ -72,7 +73,7 @@ class BTCMarkets:
         :return:
         """
         data = OrderedDict([('orderIds', order_ids)])
-        return self.process(method='POST', end_point='/order/cancel', data=data)
+        return self.process(method='POST', end_point='/order/cancel', data=data, parse_output=True)
 
     def parse_input_data(self, data):
         for upper in ('currency', 'instrument'):
@@ -84,6 +85,16 @@ class BTCMarkets:
             data['volume'] = int(data['volume'] * Multipliers.VOLUME)
         return data
 
+    @staticmethod
+    def parse_output_data(data):
+        for x in maybe_list(data):
+            if isinstance(x, dict):
+                if 'price' in x:
+                    x['price'] = x['price'] / Multipliers.PRICE
+                if 'volume' in x:
+                    x['volume'] = x['volume'] / Multipliers.VOLUME
+        return data
+
     def build_request(self, method, end_point, data=None):
         url = '%s/%s' % (self.base_url, end_point)
         if data is not None:
@@ -92,13 +103,15 @@ class BTCMarkets:
         headers = build_headers(end_point, data)
         return dict(method=method, url=url, headers=headers, data=data)
 
-    def process(self, method, end_point, data=None, result_key=None):
+    def process(self, method, end_point, data=None, result_key=None, parse_output=True):
         kwargs = self.build_request(method, end_point, data)
         if self.return_kwargs:
             return kwargs
         resp = self.request(**kwargs)
         if isinstance(resp, dict) and resp.get('errorMessage') is not None:
-            raise Exception('BTCMarkets Exception [%s] %s' % (resp['errorCode'], resp['errorMessage']))
+            raise BTCMException('[%s] %s' % (resp['errorCode'], resp['errorMessage']))
         if result_key:
-            return resp[result_key]
+            resp = resp[result_key]
+        if parse_output:
+            resp = self.parse_output_data(resp)
         return resp

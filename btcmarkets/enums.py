@@ -23,8 +23,8 @@ class OrderType:
 
 
 class Multipliers:
-    PRICE = 100000000
-    VOLUME = 100000000
+    PRICE = 100000000.0
+    VOLUME = 100000000.0
 
 
 

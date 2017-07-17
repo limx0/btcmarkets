@@ -1,4 +1,5 @@
 
+import time
 import pytest
 from btcmarkets.api import BTCMarkets
 from btcmarkets.enums import OrderSide, OrderType
@@ -6,7 +7,7 @@ from btcmarkets.enums import OrderSide, OrderType
 api = BTCMarkets()
 
 
-def test_pair_specific():
+def test_pair_specific_funcs():
     instrument, currency = 'BTC', 'AUD'
     pair_funcs = [
         api.get_open_orders,
@@ -33,19 +34,21 @@ def test_get_accounts():
 
 def test_order_insert_delete():
     instrument, currency = 'BTC', 'AUD'
-    PRICE = 1
-    VOLUME = 0.001
+    price = 1
+    volume = 0.001
 
     resp_insert = api.insert_order(
-        instrument=instrument, currency=currency, order_side=OrderSide.Buy, price=PRICE,
-        volume=VOLUME, order_type=OrderType.LIMIT
+        instrument=instrument, currency=currency, order_side=OrderSide.Buy, price=price,
+        volume=volume, order_type=OrderType.LIMIT
     )
     assert (resp_insert['id'])
+
+    # Add a small delay here
+    time.sleep(0.5)
     resp_info = api.get_order_detail(order_ids=[resp_insert['id']])
-    print(resp_info)
-    assert resp_info[0]['status'] == 'New'
-    # assert resp_info[0]['volume'] == VOLUME
-    # assert resp_info[0]['price'] == PRICE
+    assert resp_info[0]['status'] in ('New', 'Placed')
+    assert resp_info[0]['volume'] == volume
+    assert resp_info[0]['price'] == price
     resp_delete = api.delete_order(order_ids=[resp_insert['id']])
     assert resp_delete['responses'][0]['id']
     assert resp_delete['responses'][0]['success']
@@ -63,3 +66,9 @@ def test_process_exception():
     from btcmarkets.compat import HTTPError
     with pytest.raises(HTTPError):
         api.delete_order('a')
+
+
+def test_btcmarkets_exception():
+    from btcmarkets.util import BTCMException
+    with pytest.raises(BTCMException):
+        api.get_trade_history('BTC', 'AUD', limit=99999)
