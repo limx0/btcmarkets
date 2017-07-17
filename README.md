@@ -1,4 +1,6 @@
 # btcmarkets
+![build_status]
+
 `btcmarkets` is a python wrapper for the BTCMarkets API. It has no dependencies and works with Python 2/3.
 
 ### Quick start:
@@ -87,3 +89,5 @@ This could be handy if you want to use the new `async/await` features of Python 
 >>> data
 [{'currency': 'AUD', 'balance': 100, 'pendingFunds': 0}, ...]
 ```
+
+[build_status]: https://travis-ci.org/limx0/btcmarkets.svg?branch=master
