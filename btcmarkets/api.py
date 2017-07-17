@@ -51,8 +51,8 @@ class BTCMarkets:
         :param instrument: {'BTC', 'ETH', 'LTC'}
         :param currency: {'BTC', 'AUD'}
         :param order_side: ('Bid', 'Ask')
-        :param price: price for order. Must be * 100,000,000 as per https://github.com/BTCMarkets/API/wiki/Trading-API
-        :param volume: volume for order. Must be * 100,000,000 as per https://github.com/BTCMarkets/API/wiki/Trading-API
+        :param price: price for order.
+        :param volume: volume for order.
         :param order_type: {'Limit', 'Market')
         :return:
         """
