@@ -77,3 +77,19 @@ def test_btcmarkets_exception():
     from btcmarkets.util import BTCMException
     with pytest.raises(BTCMException):
         api.get_trade_history('BTC', 'AUD', limit=99999)
+
+
+def test_order_insert_currency_precision():
+    success_orders = [
+        {"instrument": "BTC", "currency": "AUD", "price": 0.1, "volume": 1,
+         "order_side": "Bid", "order_type": "Limit"},
+        {"instrument": "ETH", "currency": "BTC", "price": 0.00000001, "volume": 1,
+         "order_side": "Bid", "order_type": "Limit"},
+        {"instrument": "BTC", "currency": "AUD", "price": 0.011, "volume": 1,
+         "order_side": "Bid", "order_type": "Limit"},
+
+    ]
+    for order in success_orders:
+        resp = api.insert_order(**order)
+        assert resp['success']
+        api.delete_order([resp['id']])

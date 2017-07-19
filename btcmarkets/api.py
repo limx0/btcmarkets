@@ -56,10 +56,11 @@ class BTCMarkets:
         :param order_type: {'Limit', 'Market')
         :return:
         """
+        price_precision = {'AUD': 2, 'BTC': 8}[currency]
         data = OrderedDict([
             ('currency', currency),
             ('instrument', instrument),
-            ('price', price),
+            ('price', round(price, price_precision)),
             ('volume', volume),
             ('orderSide', order_side),
             ('ordertype', order_type),
