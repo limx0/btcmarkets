@@ -43,7 +43,7 @@ class BTCMarkets:
         return self.process(method='POST', end_point=end_point, data=data, result_key='trades', parse_output=True)
 
     def get_order_detail(self, order_ids):
-        data = OrderedDict([('orderIds', order_ids)])
+        data = OrderedDict([('orderIds', maybe_list(order_ids))])
         return self.process(method='POST', end_point='/order/detail', data=data, result_key='orders', parse_output=True)
 
     def insert_order(self, instrument, currency, order_side, price, volume, order_type):
@@ -73,7 +73,7 @@ class BTCMarkets:
         :param order_ids: list of order_ids
         :return:
         """
-        data = OrderedDict([('orderIds', order_ids)])
+        data = OrderedDict([('orderIds', maybe_list(order_ids))])
         return self.process(method='POST', end_point='/order/cancel', data=data, parse_output=True)
 
     def parse_input_data(self, data):

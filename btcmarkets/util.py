@@ -20,7 +20,9 @@ def build_headers(end_point, post_data=None):
     string_body = end_point + "\n" + timestamp + "\n"
     if post_data is not None:
         string_body += post_data
-    rsig = hmac.new(base64.standard_b64decode(secret), string_body.encode("utf-8"), hashlib.sha512)
+
+    b64_secret = base64.standard_b64decode(secret)
+    rsig = hmac.new(b64_secret, string_body.encode("utf-8"), hashlib.sha512)
     bsig = base64.standard_b64encode(rsig.digest()).decode("utf-8")
 
     return collections.OrderedDict([
@@ -34,6 +36,6 @@ def build_headers(end_point, post_data=None):
 
 
 def maybe_list(x):
-    if isinstance(x, (str, dict)):
+    if isinstance(x, (int, float, str, dict)):
         return [x]
     return x

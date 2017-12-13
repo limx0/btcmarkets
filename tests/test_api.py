@@ -1,13 +1,14 @@
-
 import time
+
 import pytest
+
 from btcmarkets.api import BTCMarkets
+from btcmarkets.compat import HTTPError
 from btcmarkets.enums import OrderSide, OrderType
+from btcmarkets.util import BTCMException
 
-api = BTCMarkets()
 
-
-def test_pair_specific_funcs():
+def test_pair_specific_funcs(api):
     instrument, currency = 'BTC', 'AUD'
     pair_funcs = [
         api.get_open_orders,
@@ -21,18 +22,18 @@ def test_pair_specific_funcs():
         assert isinstance(result, list)
 
 
-def test_order_book():
+def test_order_book(api):
     result = api.get_order_book('BTC', 'AUD')
     assert all(x in result for x in ('bids', 'asks',))
 
 
-def test_get_accounts():
+def test_get_accounts(api):
     accounts = api.get_accounts()
     assert isinstance(accounts, list)
     print(accounts)
 
 
-def test_order_insert_delete():
+def test_order_insert_delete(api):
     instrument, currency = 'BTC', 'AUD'
     price = 1
     volume = 0.001
@@ -67,19 +68,17 @@ def test_return_kwargs():
     assert kwargs['headers']
 
 
-def test_process_exception():
-    from btcmarkets.compat import HTTPError
+def test_process_exception(api):
     with pytest.raises(HTTPError):
         api.delete_order('a')
 
 
-def test_btcmarkets_exception():
-    from btcmarkets.util import BTCMException
+def test_btcmarkets_exception(api):
     with pytest.raises(BTCMException):
         api.get_trade_history('BTC', 'AUD', limit=99999)
 
 
-def test_order_insert_currency_precision():
+def test_order_insert_currency_precision(api):
     success_orders = [
         {"instrument": "BTC", "currency": "AUD", "price": 0.1, "volume": 1,
          "order_side": "Bid", "order_type": "Limit"},
